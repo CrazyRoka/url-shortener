@@ -9,10 +9,10 @@ import (
 
 var Session gocqlx.Session
 
-func InitDatabase() gocqlx.Session {
+func InitDatabase(db_host string) gocqlx.Session {
 	log.Info("Initializing database")
 
-	cluster := gocql.NewCluster("localhost")
+	cluster := gocql.NewCluster(db_host)
 	session, err := gocqlx.WrapSession(cluster.CreateSession())
 	if err != nil {
 		log.WithError(err).Fatal("Error creating database session")

@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - PORT=80
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: scylladb/scylla
+    command: --smp 1
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(nodetool statusbinary) = running ]"]
+      interval: 5s
+      timeout: 2s
+      retries: 20

@@ -1,22 +1,31 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"math/rand"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	log.Info("Starting application. Reading flags")
-	port := *flag.Uint("p", 8080, "port for application")
-	log.WithFields(log.Fields{
-		"port": port,
-	}).Info("Finished flags reading")
+	log.Info("Starting application")
 
-	InitDatabase()
+	log.Info("Seeding random function")
+	rand.Seed(time.Now().Unix())
+
+	config, err := LoadConfig()
+	if err != nil {
+		log.WithError(err).Fatal("Error reading config")
+	}
+
+	log.WithFields(log.Fields{
+		"config": config,
+	}).Info("Finished loading environment variables")
+
+	InitDatabase(config.DBHost)
 	r := CreateRoutes()
 
-	log.WithField("port", port).Info("Running application")
-	r.Run(fmt.Sprintf(":%d", port))
+	log.WithField("port", config.Port).Info("Running application")
+	r.Run(fmt.Sprintf(":%d", config.Port))
 }
