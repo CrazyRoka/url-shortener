@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gocql/gocql"
@@ -12,7 +14,7 @@ var Session gocqlx.Session
 func InitDatabase(db_host string) gocqlx.Session {
 	log.Info("Initializing database")
 
-	cluster := gocql.NewCluster(db_host)
+	cluster := gocql.NewCluster(strings.Split(db_host, ",")...)
 	session, err := gocqlx.WrapSession(cluster.CreateSession())
 	if err != nil {
 		log.WithError(err).Fatal("Error creating database session")
